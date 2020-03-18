@@ -15,6 +15,7 @@ function App() {
         const options = {
             width: '100%',
             height: '100%',
+            clickToUse: true,
             editable: true,
             stack: true,
             showMajorLabels: true,
@@ -68,11 +69,45 @@ function App() {
         ///1 denotes userId
         var items2 = fetch("/event/userEvents/1")
             .then(res => {
-                console.log(res);
                 return res.json();
             }).then((data) => {
                 console.log(data);
                 items = data.userEvents;
+
+                //todo a little logic to append to the options
+                let newest = new Date();
+                let newestDate = newest.getFullYear() + "-" + (0 + '' + newest.getMonth()).slice(-2) + "-" + newest.getDate();
+                let newestEvent = items.reduce((prev, cur) => {
+                    if (cur.end && cur.end > newestDate)
+                        newestDate = cur.end;
+                    return newestDate;
+                });
+                options.max = newestEvent;
+
+                items.sort((a,b) => {
+                    if (a.start < b.start)
+                        return -1;
+                    if (a.start === b.start)
+                        return 0;
+                    return 1;
+                });
+
+                let oldest = items[0];
+                console.log(oldest.start);
+                options.min = oldest.start;
+
+                //todo make a function that maps our domain Event, to the js lib domain model.  this works for now
+                items = items.map(event => {
+                    if (!event.end)
+                        if (event.current) {
+                            event.type = 'range';
+                            event.end = new Date();
+                        } else
+                            event.type = 'point';
+                    else
+                        event.type = 'range';
+                    return event;
+                });
                 groups = data.userEventGroups;
                 // Create a Timeline
                 let timeline = new Timeline(container, items, groups, options);
