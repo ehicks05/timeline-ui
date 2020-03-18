@@ -34,11 +34,32 @@ function App() {
       end: '2020-03-15'
     };
     setOptions(options);
+    useEffect(() => {
+        const options = {
+            width: '100%',
+            height: '100%',
+            clickToUse: true,
+            editable: true,
+            stack: true,
+            showMajorLabels: true,
+            showCurrentTime: true,
+            zoomMin: 1000000,
+            min: new Date('1970-03-15'),
+            max: new Date('2025-03-15'),
+            type: 'background',
+            format: {
+                minorLabels: {
+                    minute: 'h:mma',
+                    hour: 'ha'
+                }
+            }
+        };
+        setOptions(options);
 
     // DOM element where the Timeline will be attached
     var container = document.getElementById('visualization');
     setContainer(container);
-    
+
     // Create a DataSet (allows two way data-binding)
     var items = new DataSet([
       {id: 1, group: 7, type: 'range', content: 'Summer Vacation', start: new Date(2014, 8, 15), end: new Date(2014, 8, 31)},
@@ -71,11 +92,45 @@ function App() {
         ///1 denotes userId
         var items2 = fetch("/event/userEvents/1")
             .then(res => {
-                console.log(res);
                 return res.json();
             }).then((data) => {
                 console.log(data);
                 items = data.userEvents;
+
+                //todo a little logic to append to the options
+                let newest = new Date();
+                let newestDate = newest.getFullYear() + "-" + (0 + '' + newest.getMonth()).slice(-2) + "-" + newest.getDate();
+                let newestEvent = items.reduce((prev, cur) => {
+                    if (cur.end && cur.end > newestDate)
+                        newestDate = cur.end;
+                    return newestDate;
+                });
+                options.max = newestEvent;
+
+                items.sort((a,b) => {
+                    if (a.start < b.start)
+                        return -1;
+                    if (a.start === b.start)
+                        return 0;
+                    return 1;
+                });
+
+                let oldest = items[0];
+                console.log(oldest.start);
+                options.min = oldest.start;
+
+                //todo make a function that maps our domain Event, to the js lib domain model.  this works for now
+                items = items.map(event => {
+                    if (!event.end)
+                        if (event.current) {
+                            event.type = 'range';
+                            event.end = new Date();
+                        } else
+                            event.type = 'point';
+                    else
+                        event.type = 'range';
+                    return event;
+                });
                 groups = data.userEventGroups;
                 // Create a Timeline
                 let timeline = new Timeline(container, items, groups, options);
