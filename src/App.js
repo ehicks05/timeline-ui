@@ -1,15 +1,16 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import './App.css';
 import 'bulma/css/bulma.min.css'
 import { DataSet, Timeline } from "vis-timeline/standalone";
 import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
+import moment from "moment";
 
 function App() {
 
-    const [options, setOptions] = useState();
-    const [items, setItems] = useState();
-    const [container, setContainer] = useState();
-    const [timeline, setTimeline] = useState();
+    // const [options, setOptions] = useState();
+    // const [items, setItems] = useState();
+    // const [container, setContainer] = useState();
+    // const [timeline, setTimeline] = useState();
 
   useEffect(() => {
     const options = {
@@ -19,6 +20,7 @@ function App() {
       stack: true,
       showMajorLabels: true,
       showCurrentTime: true,
+      clickToUse: true,
       zoomMin: 1000000,
       min: new Date('1970-03-15'),
       max: new Date('2025-03-15'),
@@ -33,32 +35,11 @@ function App() {
       start: '1987-01-01',
       end: '2020-03-15'
     };
-    setOptions(options);
-    useEffect(() => {
-        const options = {
-            width: '100%',
-            height: '100%',
-            clickToUse: true,
-            editable: true,
-            stack: true,
-            showMajorLabels: true,
-            showCurrentTime: true,
-            zoomMin: 1000000,
-            min: new Date('1970-03-15'),
-            max: new Date('2025-03-15'),
-            type: 'background',
-            format: {
-                minorLabels: {
-                    minute: 'h:mma',
-                    hour: 'ha'
-                }
-            }
-        };
-        setOptions(options);
+    // setOptions(options);
 
     // DOM element where the Timeline will be attached
     var container = document.getElementById('visualization');
-    setContainer(container);
+    // setContainer(container);
 
     // Create a DataSet (allows two way data-binding)
     var items = new DataSet([
@@ -97,27 +78,19 @@ function App() {
                 console.log(data);
                 items = data.userEvents;
 
-                //todo a little logic to append to the options
-                let newest = new Date();
-                let newestDate = newest.getFullYear() + "-" + (0 + '' + newest.getMonth()).slice(-2) + "-" + newest.getDate();
-                let newestEvent = items.reduce((prev, cur) => {
-                    if (cur.end && cur.end > newestDate)
-                        newestDate = cur.end;
-                    return newestDate;
-                });
-                options.max = newestEvent;
+                const starts = items.map(item => moment(item.start));
+                const ends = items.filter(item => item.end).map(item => moment(item.end));
 
-                items.sort((a,b) => {
-                    if (a.start < b.start)
-                        return -1;
-                    if (a.start === b.start)
-                        return 0;
-                    return 1;
-                });
+                const firstDate = moment.min(starts);
+                console.log("firstDate " + firstDate.format());
+                const lastDate = moment.max(moment.max(ends), moment());
+                console.log("lastDate " + lastDate.format());
 
-                let oldest = items[0];
-                console.log(oldest.start);
-                options.min = oldest.start;
+                options.start = firstDate.subtract(1, 'year');
+                options.end = lastDate.add(1, 'year');
+
+                options.min = firstDate.subtract(1, 'year');
+                options.max = lastDate.add(1, 'year');
 
                 //todo make a function that maps our domain Event, to the js lib domain model.  this works for now
                 items = items.map(event => {
@@ -134,7 +107,7 @@ function App() {
                 groups = data.userEventGroups;
                 // Create a Timeline
                 let timeline = new Timeline(container, items, groups, options);
-                setTimeline(timeline);
+                // setTimeline(timeline);
             });
 
         // Create a Timeline
