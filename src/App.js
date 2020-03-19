@@ -82,9 +82,7 @@ function App() {
                 const ends = items.filter(item => item.end).map(item => moment(item.end));
 
                 const firstDate = moment.min(starts);
-                console.log("firstDate " + firstDate.format());
                 const lastDate = moment.max(moment.max(ends), moment());
-                console.log("lastDate " + lastDate.format());
 
                 options.start = firstDate.subtract(1, 'year');
                 options.end = lastDate.add(1, 'year');
@@ -104,9 +102,19 @@ function App() {
                         event.type = 'range';
                     return event;
                 });
-                groups = data.userEventGroups;
+
+                groups = data.userEventGroups.map(grp => {
+                    if (grp.nestedGroups.length == 0)
+                        delete grp.nestedGroups;
+
+                    return grp;
+                });
+
+                const itemSet = new DataSet(items);
+                const groupSet = new DataSet(groups);
+
                 // Create a Timeline
-                let timeline = new Timeline(container, items, groups, options);
+                let timeline = new Timeline(container, itemSet, groupSet, options);
                 // setTimeline(timeline);
             });
 
