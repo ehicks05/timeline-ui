@@ -103,6 +103,12 @@ function App() {
                     return event;
                 });
 
+                items = items.map(item => {
+                    item.title = item.start;
+                    if (item.end != null) item.title += ' - ' + item.end;
+                    return item;
+                });
+
                 groups = data.userEventGroups.map(grp => {
                     if (grp.nestedGroups.length == 0)
                         delete grp.nestedGroups;
