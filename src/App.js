@@ -119,6 +119,11 @@ function App()
                                 itemData.start = moment('1989-01-01');
                             timeline.itemsData.update(itemData);
                         }}>Toggle Born Date</button>
+                        <button className='button' onClick={() => {
+                            timeline.addCustomTime('1987-07-25', '123');
+                            timeline.setCustomTimeMarker('1987-07-25', '123', true);
+                            timeline.setCustomTimeTitle('1987-07-25', '123', true);
+                        }}>Add Custom Time Bar</button>
 
                     </div>
                     <div id="visualization" style={{width: '100%', height: '600px'}}> </div>
