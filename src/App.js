@@ -31,7 +31,11 @@ function App()
                     hour: 'ha'
                 }
             },
-            groupOrder: 'id'
+            groupOrder: 'id',
+            order: function (a, b) {
+                return b.start - a.start;
+            },
+            tooltipOnItemUpdateTime: true
         };
         setOptions(options);
 
@@ -57,17 +61,10 @@ function App()
             options.min = firstDate.subtract(1, 'year');
             options.max = lastDate.add(1, 'year');
 
-            //todo make a function that maps our domain Event, to the js lib domain model.  this works for now
+            // set end date on 'current' events
             events = events.map(event => {
-                if (!event.end)
-                    if (event.current)
-                    {
-                        event.type = 'range';
-                        event.end = new Date();
-                    } else
-                        event.type = 'point';
-                else
-                    event.type = 'range';
+                if (event.current)
+                    event.end = new Date();
                 return event;
             });
 
