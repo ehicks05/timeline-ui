@@ -91,18 +91,34 @@ function App()
         });
     }, []);
 
+    function addItem(e) {
+        e.preventDefault();
+        let maxId = 0;
+        timeline.itemsData.forEach(item => {
+            if (item.id > maxId) maxId = item.id;
+        });
+        const newId = maxId + 1;
+        const newItem = {
+            id: newId,
+            group: document.querySelector('#group').value,
+            content: document.querySelector('#content').value,
+            start: document.querySelector('#start').value,
+            end: document.querySelector('#end').value,
+            current: document.querySelector('#current').value,
+            type: document.querySelector('#type').value,
+        };
+
+        timeline.itemsData.add(newItem);
+        document.querySelector('#newEvent').reset();
+    }
+
     return (
         <div className="App">
             <Hero/>
             <section className=''>
                 <div className='container'>
                     <div className='buttons'>
-                        <button className='button' onClick={() => timeline.fit({
-                            animation: {
-                                duration: 1000,
-                                easingFunction: 'easeInOutQuad'
-                            }
-                        })}>
+                        <button className='button' onClick={() => timeline.fit()}>
                             <span className="icon">
                                 <i className="fas fa-search"> </i>
                             </span>
@@ -124,6 +140,16 @@ function App()
 
                     </div>
                     <div id="visualization" style={{width: '100%', height: '600px'}}> </div>
+
+                    <form id='newEvent' name='newEvent' onSubmit={addItem}>
+                        <label htmlFor='group'>Group</label> <input type="text" id='group' name='group' />
+                        <label htmlFor='content'>Content</label> <input type="text" id='content' name='content' />
+                        <label htmlFor='start'>Start</label> <input type="date" id='start' name='start' defaultValue='2020-01-01' />
+                        <label htmlFor='end'>End</label> <input type="date" id='end' name='end' defaultValue='2020-01-01' />
+                        <label htmlFor='current'>Current</label> <input type="checkbox" id='current' name='current' />
+                        <label htmlFor='type'>Type</label> <input type="text" id='type' name='type' />
+                    <button className='button'>Add</button>
+                    </form>
                 </div>
             </section>
             <Footer/>
