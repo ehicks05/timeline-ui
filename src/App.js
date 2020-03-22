@@ -17,7 +17,7 @@ function App()
     useEffect(() => {
         const options = {
             width: '100%',
-            height: '100%',
+            // height: '100%',
             editable: true,
             stack: true,
             showMajorLabels: true,
@@ -153,18 +153,59 @@ function App()
                         }}>Add Custom Time Bar</button>
 
                     </div>
-                    <div id="visualization" style={{width: '100%', height: '600px'}}> </div>
+                    <div id="visualization" style={{width: '100%'}}> </div>
 
-                    <form id='newEvent' name='newEvent' onSubmit={addItem}>
-                        <label htmlFor='group'>Group</label><input type="text" id='group' name='group' />
-                        <label htmlFor='title'>Title</label> <input type="text" id='title' name='title' />
-                        <label htmlFor='description'>Description</label> <input type="text" id='description' name='description' />
-                        <label htmlFor='start'>Start</label> <input type="date" id='start' name='start' defaultValue='2020-01-01' />
-                        <label htmlFor='end'>End</label> <input type="date" id='end' name='end' defaultValue='2020-01-01' />
-                        <label htmlFor='current'>Current</label> <input type="checkbox" id='current' name='current' />
-                        <label htmlFor='type'>Type</label> <input type="text" id='type' name='type' />
-                    <button className='button'>Add</button>
-                    </form>
+                    <div className='box' style={{width: '20%'}}>
+                        <p className="subtitle">Add Event</p>
+                        <form id='newEvent' name='newEvent' onSubmit={addItem}>
+                            <div className="field">
+                                <div className="control">
+                                    <input className="input is-small" type="text" id='group' name='group' placeholder="Group" />
+                                </div>
+                            </div>
+                            <div className="field">
+                                <div className="control">
+                                    <input className="input is-small" type="text" id='title' name='title' placeholder="Title" />
+                                </div>
+                            </div>
+                            <div className="field">
+                                <div className="control">
+                                    <input className="input is-small" type="text" id='description' name='description' placeholder="Description" />
+                                </div>
+                            </div>
+                            <div className="field">
+                                <label className="label is-small" htmlFor='start'>Start</label>
+                                <div className="control">
+                                    <input className="input is-small" type="date" id='start' name='start' defaultValue='2010-01-01' />
+                                </div>
+                            </div>
+                            <div className="field">
+                                <label className="label is-small" htmlFor='end'>End</label>
+                                <div className="control">
+                                    <input className="input is-small" type="date" id='end' name='end' defaultValue='2020-01-01' />
+                                </div>
+                            </div>
+                            <label className='checkbox' htmlFor='current'>
+                                <input type="checkbox" id='current' name='current' defaultChecked='' />
+                                &nbsp;Is Current
+                            </label>
+                            <br/>
+                            <div className="field">
+                                <label className="label is-small" htmlFor='type'>Type</label>
+                                <div className="control">
+                                    <div className="select is-small">
+                                        <select id='type' name='type'>
+                                            <option value='box'>Box</option>
+                                            <option value='point'>Point</option>
+                                            <option value='range'>Range</option>
+                                            <option value='background'>Background</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        <button className='button'>Add</button>
+                        </form>
+                    </div>
                 </div>
             </section>
             <Footer/>
