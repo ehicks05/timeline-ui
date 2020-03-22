@@ -155,7 +155,7 @@ function App()
                     </div>
                     <div id="visualization" style={{width: '100%'}}> </div>
 
-                    <div className='box' style={{width: '20%'}}>
+                    <div className='box'>
                         <p className="subtitle">Add Event</p>
                         <form id='newEvent' name='newEvent' onSubmit={addItem}>
                             <div className="field">
