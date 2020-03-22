@@ -35,7 +35,8 @@ function App()
             order: function (a, b) {
                 return b.start - a.start;
             },
-            tooltipOnItemUpdateTime: true
+            tooltipOnItemUpdateTime: true,
+            orientation: {axis: 'top', item: 'top'}
         };
         setOptions(options);
 
@@ -118,11 +119,10 @@ function App()
             <section className=''>
                 <div className='container'>
                     <div className='buttons'>
-                        <button className='button' onClick={() => timeline.fit()}>
+                        <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
                             <span className="icon">
-                                <i className="fas fa-search"> </i>
+                                <i className="fas fa-search-minus"> </i>
                             </span>
-                            <span>Zoom Out</span>
                         </button>
                         <button className='button' onClick={() => {
                             const itemData = timeline.itemsData.get(3);
