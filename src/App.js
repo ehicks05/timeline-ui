@@ -102,14 +102,28 @@ function App()
         const newItem = {
             id: newId,
             group: document.querySelector('#group').value,
-            content: document.querySelector('#content').value,
+            content: document.querySelector('#description').value,
+            title: document.querySelector('#title').value,
             start: document.querySelector('#start').value,
             end: document.querySelector('#end').value,
             current: document.querySelector('#current').value,
             type: document.querySelector('#type').value,
+            userId: 1 //todo get userId from state user
         };
 
-        timeline.itemsData.add(newItem);
+        fetch("/event/userEvents", {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(newItem)
+        })
+            .then(response => {
+                if (response.status === 200)
+                    timeline.itemsData.add(newItem);
+                else {}
+                    //todo make error message that something failed
+                    //put error message in response
+            });
+
         document.querySelector('#newEvent').reset();
     }
 
@@ -142,8 +156,9 @@ function App()
                     <div id="visualization" style={{width: '100%', height: '600px'}}> </div>
 
                     <form id='newEvent' name='newEvent' onSubmit={addItem}>
-                        <label htmlFor='group'>Group</label> <input type="text" id='group' name='group' />
-                        <label htmlFor='content'>Content</label> <input type="text" id='content' name='content' />
+                        <label htmlFor='group'>Group</label><input type="text" id='group' name='group' />
+                        <label htmlFor='title'>Title</label> <input type="text" id='title' name='title' />
+                        <label htmlFor='description'>Description</label> <input type="text" id='description' name='description' />
                         <label htmlFor='start'>Start</label> <input type="date" id='start' name='start' defaultValue='2020-01-01' />
                         <label htmlFor='end'>End</label> <input type="date" id='end' name='end' defaultValue='2020-01-01' />
                         <label htmlFor='current'>Current</label> <input type="checkbox" id='current' name='current' />
