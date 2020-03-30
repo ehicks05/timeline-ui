@@ -43,12 +43,12 @@ function App()
         // DOM element where the Timeline will be attached
         var container = document.getElementById('visualization');
 
-        fetch("/event/userEvents/1")
+        fetch("/timeline/1")
             .then(res => {
                 return res.json();
             }).then((data) => {
             console.log(data);
-            let events = data.userEvents;
+            let events = data.eventList;
 
             const starts = events.map(item => moment(item.start));
             const ends = events.filter(item => item.end).map(item => moment(item.end));
@@ -75,7 +75,7 @@ function App()
                 return item;
             });
 
-            let groups = data.userEventGroups.map(grp => {
+            let groups = data.eventGroupList.map(grp => {
                 if (grp.nestedGroups.length === 0)
                     delete grp.nestedGroups;
 
