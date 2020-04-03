@@ -13,7 +13,6 @@ function App()
     const [options, setOptions] = useState();
     const [container, setContainer] = useState({});
     const [timeline, setTimeline] = useState({});
-    const [newGroup, setNewGroup] = useState("");
 
     useEffect(() => {
         const options = {
@@ -93,10 +92,53 @@ function App()
         });
     }, []);
 
+    function toggleAddEventForm()
+    {
+        document.getElementById('addEventFormContainer').classList.toggle('is-hidden');
+        document.querySelector('#toggleAddEventFormButton span i').classList.toggle('fa-plus');
+        document.querySelector('#toggleAddEventFormButton span i').classList.toggle('fa-minus');
+    }
+
+    return (
+        <div className="App">
+            <Hero/>
+                <section className=''>
+                <div className='container'>
+                    <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
+                        <span className="icon">
+                            <i className="fas fa-search-minus"> </i>
+                        </span>
+                    </button>
+
+                    <div id="timelineContainer" style={{width: '100%'}}> </div>
+
+                    {
+                        timeline.groupsData &&
+                        <>
+                            <button id='toggleAddEventFormButton' title='Add Event' className='button' onClick={toggleAddEventForm}>
+                                <span className="icon">
+                                    <i className="fas fa-plus"> </i>
+                                </span>
+                            </button>
+
+                            <AddEventForm timeline={timeline} />
+                        </>
+                    }
+
+                </div>
+            </section>
+            <Footer/>
+        </div>
+    );
+}
+
+function AddEventForm(props) {
+    const [newGroup, setNewGroup] = useState("");
+
     function addItem(e) {
         e.preventDefault();
         let maxId = 0;
-        timeline.itemsData.forEach(item => {
+        props.timeline.itemsData.forEach(item => {
             if (item.id > maxId) maxId = item.id;
         });
         const newId = maxId + 1;
@@ -119,90 +161,74 @@ function App()
         })
             .then(response => {
                 if (response.status === 200)
-                    timeline.itemsData.add(newItem);
+                    props.timeline.itemsData.add(newItem);
                 else {}
-                    //todo make error message that something failed
-                    //put error message in response
+                //todo make error message that something failed
+                //put error message in response
             });
 
         document.querySelector('#newEvent').reset();
     }
 
     return (
-        <div className="App">
-            <Hero/>
-            <section className=''>
-                <div className='container'>
-                    <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
-                        <span className="icon">
-                            <i className="fas fa-search-minus"> </i>
-                        </span>
-                    </button>
-
-                    <div id="timelineContainer" style={{width: '100%'}}> </div>
-
-                    <div className='box'>
-                        <p className="subtitle">Add Event</p>
-                        <form id='newEvent' name='newEvent' onSubmit={addItem}>
-                            <div className="field">
-                                <div className="control">
-                                    <div className="select is-small">
-                                        <select id='group' name='group' value={newGroup.value} onChange={setNewGroup}>
-                                            <option value="">Group</option>
-                                            {
-                                                timeline.groupsData &&
-                                                timeline.groupsData.get().map(group =>
-                                                    <option value={group.id}>{group.content}</option>)}
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="field">
-                                <div className="control">
-                                    <input className="input is-small" type="text" id='title' name='title' placeholder="Title" />
-                                </div>
-                            </div>
-                            <div className="field">
-                                <div className="control">
-                                    <input className="input is-small" type="text" id='description' name='description' placeholder="Description" />
-                                </div>
-                            </div>
-                            <div className="field">
-                                <label className="label is-small" htmlFor='start'>Start</label>
-                                <div className="control">
-                                    <input className="input is-small" type="date" id='start' name='start' defaultValue='2010-01-01' />
-                                </div>
-                            </div>
-                            <div className="field">
-                                <label className="label is-small" htmlFor='end'>End</label>
-                                <div className="control">
-                                    <input className="input is-small" type="date" id='end' name='end' defaultValue='2020-01-01' />
-                                </div>
-                            </div>
-                            <label className='checkbox' htmlFor='current'>
-                                <input type="checkbox" id='current' name='current' defaultChecked='' />
-                                &nbsp;Is Current
-                            </label>
-                            <br/>
-                            <div className="field">
-                                <label className="label is-small" htmlFor='type'>Type</label>
-                                <div className="control">
-                                    <div className="select is-small">
-                                        <select id='type' name='type'>
-                                            <option value='box'>Box</option>
-                                            <option value='point'>Point</option>
-                                            <option value='range'>Range</option>
-                                            <option value='background'>Background</option>
-                                        </select>
-                                    </div>
-                                </div>
-                            </div>
-                            <button className='button is-small is-primary'>Add</button>
-                        </form>
+        <div className='box is-hidden' id='addEventFormContainer'>
+            <p className="subtitle">Add Event</p>
+            <form id='newEvent' name='newEvent' onSubmit={addItem}>
+                <div className="field">
+                    <div className="control">
+                        <div className="select is-small">
+                            <select id='group' name='group' value={newGroup.value} onChange={setNewGroup}>
+                                <option value="">Group</option>
+                                {
+                                    props.timeline.groupsData.get().map(group =>
+                                        <option value={group.id}>{group.content}</option>)
+                                }
+                            </select>
+                        </div>
                     </div>
                 </div>
-            </section>
-            <Footer/>
+                <div className="field">
+                    <div className="control">
+                        <input className="input is-small" type="text" id='title' name='title' placeholder="Title" />
+                    </div>
+                </div>
+                <div className="field">
+                    <div className="control">
+                        <input className="input is-small" type="text" id='description' name='description' placeholder="Description" />
+                    </div>
+                </div>
+                <div className="field">
+                    <label className="label is-small" htmlFor='start'>Start</label>
+                    <div className="control">
+                        <input className="input is-small" type="date" id='start' name='start' defaultValue='2010-01-01' />
+                    </div>
+                </div>
+                <div className="field">
+                    <label className="label is-small" htmlFor='end'>End</label>
+                    <div className="control">
+                        <input className="input is-small" type="date" id='end' name='end' defaultValue='2020-01-01' />
+                    </div>
+                </div>
+                <label className='checkbox' htmlFor='current'>
+                    <input type="checkbox" id='current' name='current' defaultChecked='' />
+                    &nbsp;Is Current
+                </label>
+                <br/>
+                <div className="field">
+                    <label className="label is-small" htmlFor='type'>Type</label>
+                    <div className="control">
+                        <div className="select is-small">
+                            <select id='type' name='type'>
+                                <option value='box'>Box</option>
+                                <option value='point'>Point</option>
+                                <option value='range'>Range</option>
+                                <option value='background'>Background</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <button className='button is-small is-primary'>Add</button>
+            </form>
         </div>
     );
 }
