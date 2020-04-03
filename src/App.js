@@ -13,6 +13,7 @@ function App()
     const [options, setOptions] = useState();
     const [container, setContainer] = useState({});
     const [timeline, setTimeline] = useState({});
+    const [newGroup, setNewGroup] = useState("");
 
     useEffect(() => {
         const options = {
@@ -160,7 +161,15 @@ function App()
                         <form id='newEvent' name='newEvent' onSubmit={addItem}>
                             <div className="field">
                                 <div className="control">
-                                    <input className="input is-small" type="text" id='group' name='group' placeholder="Group" />
+                                    <div className="select is-small">
+                                        <select id='group' name='group' value={newGroup.value} onChange={setNewGroup}>
+                                            <option value="">Group</option>
+                                            {
+                                                timeline.groupsData &&
+                                                timeline.groupsData.get().map(group =>
+                                                    <option value={group.id}>{group.content}</option>)}
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
                             <div className="field">
@@ -203,7 +212,7 @@ function App()
                                     </div>
                                 </div>
                             </div>
-                        <button className='button'>Add</button>
+                        <button className='button is-small is-primary'>Add</button>
                         </form>
                     </div>
                 </div>
