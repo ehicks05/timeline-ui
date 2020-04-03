@@ -42,7 +42,7 @@ function App()
         setOptions(options);
 
         // DOM element where the Timeline will be attached
-        var container = document.getElementById('visualization');
+        var container = document.getElementById('timelineContainer');
 
         fetch("/timeline/1")
             .then(res => {
@@ -133,28 +133,13 @@ function App()
             <Hero/>
             <section className=''>
                 <div className='container'>
-                    <div className='buttons'>
-                        <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
-                            <span className="icon">
-                                <i className="fas fa-search-minus"> </i>
-                            </span>
-                        </button>
-                        <button className='button' onClick={() => {
-                            const itemData = timeline.itemsData.get(3);
-                            if (moment(itemData.start).isSame(moment('1989-01-01')))
-                                itemData.start = moment('1984-01-01');
-                            else
-                                itemData.start = moment('1989-01-01');
-                            timeline.itemsData.update(itemData);
-                        }}>Toggle Born Date</button>
-                        <button className='button' onClick={() => {
-                            timeline.addCustomTime('1987-07-25', '123');
-                            timeline.setCustomTimeMarker('1987-07-25', '123', true);
-                            timeline.setCustomTimeTitle('1987-07-25', '123', true);
-                        }}>Add Custom Time Bar</button>
+                    <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
+                        <span className="icon">
+                            <i className="fas fa-search-minus"> </i>
+                        </span>
+                    </button>
 
-                    </div>
-                    <div id="visualization" style={{width: '100%'}}> </div>
+                    <div id="timelineContainer" style={{width: '100%'}}> </div>
 
                     <div className='box'>
                         <p className="subtitle">Add Event</p>
@@ -212,7 +197,7 @@ function App()
                                     </div>
                                 </div>
                             </div>
-                        <button className='button is-small is-primary'>Add</button>
+                            <button className='button is-small is-primary'>Add</button>
                         </form>
                     </div>
                 </div>
