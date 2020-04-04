@@ -13,6 +13,23 @@ function App()
     const [options, setOptions] = useState();
     const [container, setContainer] = useState({});
     const [timeline, setTimeline] = useState({});
+    const [timelineData, setTimelineData] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    async function fetchTimeline(userId) {
+        const response = await fetch(`/timeline/${userId}`);
+        const timelineData = await response.json();
+        setTimelineData(timelineData);
+        setLoading(false);
+        return timelineData;
+    }
+
+    async function remove(item) {
+        const response = await fetch(`/event/1/${item.id}`, {
+            method: 'DELETE',
+        });
+        return response;
+    }
 
     useEffect(() => {
         const options = {
@@ -36,19 +53,22 @@ function App()
                 return b.start - a.start;
             },
             tooltipOnItemUpdateTime: true,
-            orientation: {axis: 'top', item: 'top'}
-        };
+            orientation: {axis: 'top', item: 'top'},
+            onRemove: (item, callback) => {
+                remove(item).then(response => {
+                    if (response.status === 200)
+                        callback(item);
+                    else
+                        callback(null);
+                });
+            },
+        }
         setOptions(options);
-
-        // DOM element where the Timeline will be attached
-        var container = document.getElementById('timelineContainer');
-
-        fetch("/timeline/1")
-            .then(res => {
-                return res.json();
-            }).then((data) => {
-            console.log(data);
+        fetchTimeline(1, options).then(data =>
+        {
             let events = data.eventList;
+            // DOM element where the Timeline will be attached
+            var container = document.getElementById('timelineContainer');
 
             const starts = events.map(item => moment(item.start));
             const ends = events.filter(item => item.end).map(item => moment(item.end));
@@ -89,6 +109,7 @@ function App()
             let timeline = new Timeline(container, itemSet, groupSet, options);
             setTimeline(timeline);
             setContainer(container);
+            console.log(data);
         });
     }, []);
 
@@ -99,10 +120,13 @@ function App()
         document.querySelector('#toggleAddEventFormButton span i').classList.toggle('fa-minus');
     }
 
+    if (loading)
+        return <div>Loading...</div> //todo make a spinner or some loading gif for this
+
     return (
         <div className="App">
-            <Hero/>
-                <section className=''>
+            <Hero timeline={timelineData.timeline}/>
+            <section className=''>
                 <div className='container'>
                     <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
                         <span className="icon">
@@ -135,10 +159,12 @@ function App()
 function AddEventForm(props) {
     const [newGroup, setNewGroup] = useState("");
 
-    function addItem(e) {
+    async function addItem(e)
+    {
         e.preventDefault();
         let maxId = 0;
-        props.timeline.itemsData.forEach(item => {
+        props.timeline.itemsData.forEach(item =>
+        {
             if (item.id > maxId) maxId = item.id;
         });
         const newId = maxId + 1;
@@ -154,19 +180,19 @@ function AddEventForm(props) {
             userId: 1 //todo get userId from state user
         };
 
-        fetch("/event/userEvents", {
+        const response = await fetch("/event/userEvents", {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(newItem)
-        })
-            .then(response => {
-                if (response.status === 200)
-                    props.timeline.itemsData.add(newItem);
-                else {}
-                //todo make error message that something failed
-                //put error message in response
-            });
+        });
 
+        if (response.status === 200) {
+            console.log('everything was good');
+            props.timeline.itemsData.add(newItem);
+        }
+        else {}
+        //todo make error message that something failed
+        //put error message in response
         document.querySelector('#newEvent').reset();
     }
 
@@ -181,7 +207,7 @@ function AddEventForm(props) {
                                 <option value="">Group</option>
                                 {
                                     props.timeline.groupsData.get().map(group =>
-                                        <option value={group.id}>{group.content}</option>)
+                                        <option key={group.id} value={group.id}>{group.content}</option>)
                                 }
                             </select>
                         </div>
