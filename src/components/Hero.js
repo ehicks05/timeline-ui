@@ -7,10 +7,10 @@ export default function Hero(props)
             <div className="hero-body">
                 <div className="container">
                     <h1 className="title">
-                        {props.timeline.title}
+                        {props.title}
                     </h1>
                     <h2 className="subtitle">
-                        {props.timeline.subTitle}
+                        {props.subTitle}
                     </h2>
                 </div>
             </div>

@@ -121,11 +121,11 @@ function App()
     }
 
     if (loading)
-        return <div>Loading...</div> //todo make a spinner or some loading gif for this
+        return <Hero title="Loading..." subTitle="Please Wait..."/>; //todo make a spinner or some loading gif for this
 
     return (
         <div className="App">
-            <Hero timeline={timelineData.timeline}/>
+            <Hero title={timelineData.timeline.title} subTitle={timelineData.timeline.subTitle}/>
             <section className=''>
                 <div className='container'>
                     <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
