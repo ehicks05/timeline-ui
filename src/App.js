@@ -7,14 +7,14 @@ import 'vis-timeline/styles/vis-timeline-graph2d.min.css';
 import moment from "moment";
 import Footer from "./components/Footer";
 import Hero from "./components/Hero";
+import EventForm from "./EventForm";
 
 function App()
 {
-    const [options, setOptions] = useState();
-    const [container, setContainer] = useState({});
     const [timeline, setTimeline] = useState({});
     const [timelineData, setTimelineData] = useState({});
     const [loading, setLoading] = useState(true);
+    const [selectedEvent, setSelectedEvent] = useState({start: moment(), end: moment()});
 
     async function fetchTimeline(userId) {
         const response = await fetch(`/timeline/${userId}`);
@@ -63,7 +63,7 @@ function App()
                 });
             },
         }
-        setOptions(options);
+        
         fetchTimeline(1, options).then(data =>
         {
             let events = data.eventList;
@@ -108,8 +108,13 @@ function App()
             // Create a Timeline
             let timeline = new Timeline(container, itemSet, groupSet, options);
             setTimeline(timeline);
-            setContainer(container);
-            console.log(data);
+            console.log(timeline.itemsData.get());
+
+            timeline.on('select', function (properties) {
+                const selectedItems = properties.items;
+                if (selectedItems)
+                    setSelectedEvent(timeline.itemsData.get(selectedItems[0]));
+            });
         });
     }, []);
 
@@ -121,7 +126,7 @@ function App()
     }
 
     if (loading)
-        return <Hero title="Loading..." subTitle="Please Wait..."/>; //todo make a spinner or some loading gif for this
+        return <Hero title="Loading..." subTitle="Please Wait..."/>;
 
     return (
         <div className="App">
@@ -145,116 +150,13 @@ function App()
                                 </span>
                             </button>
 
-                            <AddEventForm timeline={timeline} />
+                            <EventForm timeline={timeline} event={selectedEvent} />
                         </>
                     }
 
                 </div>
             </section>
             <Footer/>
-        </div>
-    );
-}
-
-function AddEventForm(props) {
-    const [newGroup, setNewGroup] = useState("");
-
-    async function addItem(e)
-    {
-        e.preventDefault();
-        let maxId = 0;
-        props.timeline.itemsData.forEach(item =>
-        {
-            if (item.id > maxId) maxId = item.id;
-        });
-        const newId = maxId + 1;
-        const newItem = {
-            id: newId,
-            group: document.querySelector('#group').value,
-            content: document.querySelector('#description').value,
-            title: document.querySelector('#title').value,
-            start: document.querySelector('#start').value,
-            end: document.querySelector('#end').value,
-            current: document.querySelector('#current').value,
-            type: document.querySelector('#type').value,
-            userId: 1 //todo get userId from state user
-        };
-
-        const response = await fetch("/event/userEvents", {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(newItem)
-        });
-
-        if (response.status === 200) {
-            console.log('everything was good');
-            props.timeline.itemsData.add(newItem);
-        }
-        else {}
-        //todo make error message that something failed
-        //put error message in response
-        document.querySelector('#newEvent').reset();
-    }
-
-    return (
-        <div className='box is-hidden' id='addEventFormContainer'>
-            <p className="subtitle">Add Event</p>
-            <form id='newEvent' name='newEvent' onSubmit={addItem}>
-                <div className="field">
-                    <div className="control">
-                        <div className="select is-small">
-                            <select id='group' name='group' value={newGroup.value} onChange={setNewGroup}>
-                                <option value="">Group</option>
-                                {
-                                    props.timeline.groupsData.get().map(group =>
-                                        <option key={group.id} value={group.id}>{group.content}</option>)
-                                }
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <div className="field">
-                    <div className="control">
-                        <input className="input is-small" type="text" id='title' name='title' placeholder="Title" />
-                    </div>
-                </div>
-                <div className="field">
-                    <div className="control">
-                        <input className="input is-small" type="text" id='description' name='description' placeholder="Description" />
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label is-small" htmlFor='start'>Start</label>
-                    <div className="control">
-                        <input className="input is-small" type="date" id='start' name='start' defaultValue='2010-01-01' />
-                    </div>
-                </div>
-                <div className="field">
-                    <label className="label is-small" htmlFor='end'>End</label>
-                    <div className="control">
-                        <input className="input is-small" type="date" id='end' name='end' defaultValue='2020-01-01' />
-                    </div>
-                </div>
-                <label className='checkbox' htmlFor='current'>
-                    <input type="checkbox" id='current' name='current' defaultChecked='' />
-                    &nbsp;Is Current
-                </label>
-                <br/>
-                <div className="field">
-                    <label className="label is-small" htmlFor='type'>Type</label>
-                    <div className="control">
-                        <div className="select is-small">
-                            <select id='type' name='type'>
-                                <option value='box'>Box</option>
-                                <option value='point'>Point</option>
-                                <option value='range'>Range</option>
-                                <option value='background'>Background</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
-                <button className='button is-small is-primary'>Add</button>
-            </form>
         </div>
     );
 }

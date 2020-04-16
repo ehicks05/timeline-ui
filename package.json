@@ -11,6 +11,7 @@
     "react": "^16.13.0",
     "react-dom": "^16.13.0",
     "react-scripts": "3.4.0",
+    "react-spinners": "^0.8.1",
     "vis-data": "^6.5.0",
     "vis-timeline": "^7.3.3"
   },
