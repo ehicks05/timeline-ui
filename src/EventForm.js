@@ -39,20 +39,27 @@ export default function EventForm(props) {
             userId: 1 //todo get userId from state user
         };
 
+        const method = event.id ? 'PUT' : 'POST';
         const response = await fetch("/event/userEvents", {
-            method: 'POST',
+            method: method,
             headers: {'Content-Type': 'application/json'},
             body: JSON.stringify(newItem)
         });
 
         if (response.status === 200) {
             console.log('everything was good');
-            props.timeline.itemsData.add(newItem);
+
+            if (!event.id)
+            {
+                props.timeline.itemsData.add(newItem);
+            }
+            else
+                props.timeline.itemsData.update(newItem);
         }
-        else {}
-        //todo make error message that something failed
-        //put error message in response
-        document.querySelector('#newEvent').reset();
+        else {
+            //todo make error message that something failed
+            //put error message in response
+        }
     }
 
     return (
