@@ -15,6 +15,7 @@ function App()
     const [timelineData, setTimelineData] = useState({});
     const [loading, setLoading] = useState(true);
     const [selectedEvent, setSelectedEvent] = useState({start: moment(), end: moment()});
+    const [showEventForm, setShowEventForm] = useState(true);
 
     async function fetchTimeline(userId) {
         const response = await fetch(`/timeline/${userId}`);
@@ -130,9 +131,7 @@ function App()
 
     function toggleAddEventForm()
     {
-        document.getElementById('addEventFormContainer').classList.toggle('is-hidden');
-        document.querySelector('#toggleAddEventFormButton span i').classList.toggle('fa-plus');
-        document.querySelector('#toggleAddEventFormButton span i').classList.toggle('fa-minus');
+        setShowEventForm(!showEventForm);
     }
 
     if (loading)
@@ -142,30 +141,40 @@ function App()
         <div className="App">
             <Hero title={timelineData.timeline.title} subTitle={timelineData.timeline.subTitle}/>
             <section className=''>
-                <div className='container'>
-                    <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
-                        <span className="icon">
-                            <i className="fas fa-search-minus"> </i>
-                        </span>
-                    </button>
 
-                    <div id="timelineContainer" style={{width: '100%'}}> </div>
+            </section>
 
-                    {
-                        timeline.groupsData &&
-                        <>
-                            <button id='toggleAddEventFormButton' title='Add Event' className='button' onClick={toggleAddEventForm}>
-                                <span className="icon">
-                                    <i className="fas fa-plus"> </i>
-                                </span>
+            <div className='container'>
+                <div className='columns'>
+                    <div className='column'>
+                            <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
+                            <span className="icon">
+                                <i className="fas fa-search-minus"> </i>
+                            </span>
                             </button>
 
-                            <EventForm timeline={timeline} event={selectedEvent} />
-                        </>
-                    }
+                            <div id="timelineContainer" style={{width: '100%'}}> </div>
 
+                    </div>
+
+                    <div className='column is-one-quarter'>
+                        {
+                            timeline.groupsData &&
+                            <>
+                                <button id='toggleAddEventFormButton' title='Add Event' className='button' onClick={toggleAddEventForm}>
+                                    <span className="icon">
+                                        <i className={"fas " + (showEventForm ? 'fa-minus' : 'fa-plus')}> </i>
+                                    </span>
+                                </button>
+
+                                <EventForm timeline={timeline} event={selectedEvent} showEventForm={showEventForm} />
+                            </>
+                        }
+                    </div>
                 </div>
-            </section>
+            </div>
+
+
             <Footer/>
         </div>
     );
