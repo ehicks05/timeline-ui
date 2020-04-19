@@ -57,7 +57,7 @@ export default function EventForm(props) {
 
     return (
         <div className='box is-hidden' id='addEventFormContainer'>
-            <p className="subtitle">Add Event</p>
+            <p className="subtitle">{event.id ? 'Update' : 'Add'} Event</p>
             <form id='newEvent' name='newEvent' onSubmit={saveEvent}>
                 <div className="field">
                     <div className="control">

@@ -95,11 +95,19 @@ function App()
                 return item;
             });
 
-            let groups = data.eventGroupList.map(grp => {
-                if (grp.nestedGroups.length === 0)
-                    delete grp.nestedGroups;
-
-                return grp;
+            const groups = data.eventGroupList;
+            
+            groups.forEach(group => {
+                if (group.parentGroupId)
+                {
+                    const parent = groups.find(g => g.id === group.parentGroupId);
+                    if (parent)
+                    {
+                        if (!parent.nestedGroups)
+                            parent.nestedGroups = [];
+                        parent.nestedGroups.push(group.id)
+                    }
+                }
             });
 
             const itemSet = new DataSet(events);
@@ -112,8 +120,10 @@ function App()
 
             timeline.on('select', function (properties) {
                 const selectedItems = properties.items;
-                if (selectedItems)
+                if (selectedItems.length === 1)
                     setSelectedEvent(timeline.itemsData.get(selectedItems[0]));
+                else
+                    setSelectedEvent({start: moment(), end: moment(), content: '', group: ''});
             });
         });
     }, []);
