@@ -145,7 +145,7 @@ function App()
             </section>
 
             <div className='container'>
-                <div className='columns'>
+                <div className='columns is-0-mobile'>
                     <div className='column'>
                             <button title='Zoom Out' className='button' onClick={() => timeline.fit()}>
                             <span className="icon">
