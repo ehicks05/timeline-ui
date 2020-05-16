@@ -40,7 +40,7 @@ function App()
             stack: true,
             showMajorLabels: true,
             showCurrentTime: true,
-            clickToUse: true,
+            // clickToUse: true,
             zoomMin: 7 * 24 * 60 * 60 * 1000, // width of timeline = 1 week
             type: 'background',
             format: {
@@ -93,6 +93,16 @@ function App()
             events = events.map(item => {
                 item.title = item.start;
                 if (item.end != null) item.title += ' - ' + item.end;
+                return item;
+            });
+
+            // parse dates
+            events = events.map(item => {
+                item.start = moment(item.start, "YYYY-MM-DD Z");
+
+                if (item.end != null)
+                    item.end = moment(item.end, "YYYY-MM-DD Z");
+
                 return item;
             });
 
