@@ -51,7 +51,7 @@ function App()
             },
             groupOrder: 'id',
             order: function (a, b) {
-                return b.start - a.start;
+                return a.start - b.start;
             },
             tooltipOnItemUpdateTime: true,
             orientation: {axis: 'top', item: 'top'},
